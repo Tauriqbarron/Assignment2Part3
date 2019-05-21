@@ -1,7 +1,13 @@
 package com.example.assignment2part3;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,6 +21,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Button btnGetLocation;
+
+    //Vars
+    private int requestLocation = 99;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +32,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        getLocation(this);
+    }
+    private void getLocation(final Context context){
+        btnGetLocation = findViewById(R.id.btnGetLocation);
+        btnGetLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // check permissions
+                if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MapsActivity.this,new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION},requestLocation);
+                }
 
+            }
+        });
     }
 
     @Override
@@ -34,4 +58,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         float zoom = 11f;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(auckland,zoom));
     }
+
 }
