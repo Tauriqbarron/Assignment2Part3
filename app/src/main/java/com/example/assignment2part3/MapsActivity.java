@@ -33,7 +33,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -50,7 +49,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     ActivityCompat.requestPermissions(MapsActivity.this,new String[]{
                             Manifest.permission.ACCESS_FINE_LOCATION},requestLocation);
                 }
-                //ini Fused location client
+                //This Function finds the last knw location and then moves the camera to that location
+                // finally its displays a blue dot at the location.
                 mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
                 try{
                    final Task <Location> currentLocation =mFusedLocationProviderClient.getLastLocation();
@@ -59,16 +59,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onComplete(@NonNull Task<Location> task) {
                             LatLng currentLatLng = new LatLng((double)currentLocation.getResult().getLatitude(),
                                     (double)currentLocation.getResult().getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,14f));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,15f));
+                            mMap.setMyLocationEnabled(true);
                         }
                     });
-
                 }catch(SecurityException e){
                     Log.e(TAG,"Get Location: Security Exception: "+e.getMessage());
                 }
             }
         });
     }
+    // Once the map is ready this moves the camera to the Auckland area
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
